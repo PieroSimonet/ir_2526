@@ -36,3 +36,15 @@ install(
   DIRECTORY worlds
   DESTINATION share/${PROJECT_NAME}
 )
+
+# Install the python launch files
+install(
+  DIRECTORY params
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# Install the python launch files
+install(
+  DIRECTORY maps
+  DESTINATION share/${PROJECT_NAME}
+)
