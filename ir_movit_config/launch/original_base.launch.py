@@ -171,11 +171,14 @@ def launch_setup(context, *args, **kwargs):
         arguments=["gripper_controller", "-c", "/controller_manager"],
     )
 
+    base_dir = get_package_share_directory('ir_base')
+
+
     # GZ nodes
     gz_spawn_entity = Node(
         package="ros_gz_sim",
         executable="create",
-        output="screen",
+        output="screen", 
         arguments=[
             "-string",
             robot_description_content,
@@ -203,8 +206,23 @@ def launch_setup(context, *args, **kwargs):
     gz_sim_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
-        arguments=[
-            "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
+        #arguments=[
+        #    "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
+        #],
+        parameters=[
+            {
+                'config_file': os.path.join(
+                    base_dir, 'params', 'ur_bridge.yaml'
+                ),
+                'expand_gz_topic_names': True,
+                'use_sim_time': True,
+            }
+        ],
+        remappings=[
+            ('/world/default/model/external_camera/link/link/sensor/rgb_camera/image', 'rgb_camera/image'),
+            ('/world/default/model/external_camera/link/link/sensor/depth_camera/image', 'depth_camera/image'),
+            ('/world/default/model/external_camera/link/link/sensor/rgb_camera/camera_info', 'rgb_camera/info'),
+            ('/world/default/model/external_camera/link/link/sensor/depth_camera/camera_info', 'depth_camera/info'),
         ],
         output="screen",
     )
@@ -333,7 +351,10 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "world_file",
-            default_value="/var/home/piero/Projects/ros2/ir_ws/src/ir_base/worlds/empy.sdf",
+            default_value=PathJoinSubstitution(
+                [FindPackageShare("ir_base"), "worlds", "iaslab_empty_ur.sdf.xacro"]
+            ),          
+            #"/var/home/piero/Projects/ros2/ir_ws/src/ir_base/worlds/iaslab_empty.sdf.xacro",
             description="Gazebo world file (absolute path or filename from the gazebosim worlds collection) containing a custom world.",
         )
     )
