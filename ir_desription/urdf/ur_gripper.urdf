@@ -680,4 +680,37 @@
     </joint> -->
 
   </ros2_control>
+
+
+  <!-- Camera --> 
+
+  <link name="base_camera_link"> 
+    <visual>
+      <geometry>
+       <box size="0.1 0.1 0.1"/> 
+      </geometry> 
+    </visual>
+  </link> 
+  <link name="external_camera/link/rgb_camera"> 
+    <visual>
+     <geometry>
+      <box size="0.1 0.1 0.1"/>
+    </geometry> 
+  </visual> 
+  </link> 
+  <!-- fixed joint -->
+  <joint name="world_to_camera" type="fixed">
+    <parent link="base_link"/> 
+    <child link="base_camera_link"/> 
+    <origin xyz="0 -1.33 2.00" rpy="0 1.1 1.65"/> 
+  </joint>
+  <!-- fixed joint -->
+  <joint name="camera_to_optic" type="fixed"> 
+    <parent link="base_camera_link"/> 
+    <child link="external_camera/link/rgb_camera"/>
+    <origin xyz="0 0 0" rpy="-1.57 0 -1.57"/> 
+  </joint>
+
+  
+
 </robot>

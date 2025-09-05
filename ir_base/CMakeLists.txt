@@ -48,3 +48,9 @@ install(
   DIRECTORY maps
   DESTINATION share/${PROJECT_NAME}
 )
+
+# Install the models files
+install(
+  DIRECTORY models
+  DESTINATION share/${PROJECT_NAME}
+)

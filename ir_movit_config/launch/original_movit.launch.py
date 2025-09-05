@@ -116,7 +116,8 @@ def generate_launch_description():
 
     moveit_config = (
         MoveItConfigsBuilder(robot_name="ur", package_name="ir_movit_config")
-        .robot_description_semantic(Path("config") / "ur_gripper.urdf", {"name": ur_type})
+        .robot_description(Path("config") / "robot_with_environment.urdf.xacro", {"name": ur_type})
+        .robot_description_semantic(Path("config") / "ur_gripper.srdf", {"name": ur_type})
         .robot_description_kinematics(Path("config") / "kinematics.yaml")
         .to_moveit_configs()
     )
@@ -185,12 +186,29 @@ def generate_launch_description():
             },
         ],
     )
+    
+    test_node = Node(
+        package="ir_movit_config",
+        executable="short_joint_state_publisher",
+        name="short_joint_state_publisher",
+    )
+
+    #initial_pos = Node(
+    #    package='joint_state_publisher',
+    #    executable='joint_state_publisher',
+    #    name='joint_state_publisher',
+    #    parameters=[ PathJoinSubstitution(
+    #        [FindPackageShare("ir_desription"), "config", "initial_positions.rviz"]
+    #        )],
+    #    output='screen',
+    #),
+
 
     ld.add_action(
         RegisterEventHandler(
             OnProcessExit(
                 target_action=wait_robot_description,
-                on_exit=[move_group_node, rviz_node, servo_node],
+                on_exit=[test_node, move_group_node, rviz_node, servo_node],
             )
         ),
     )

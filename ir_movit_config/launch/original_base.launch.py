@@ -73,15 +73,27 @@ def launch_setup(context, *args, **kwargs):
 
     # Set the Gazebo resource path to find meshes and models
     ur_description_share_dir = get_package_share_directory('ur_description')
+    base_share_dir = get_package_share_directory('ir_base')
+
     
     # Correctly set the path to the parent of the package folder.
     # This allows Gazebo to find 'ir_desription' as a model.
     parent_dir = os.path.dirname(ur_description_share_dir)
+    local_dir = os.path.dirname(base_share_dir)
+    materials_dir = os.path.join(base_share_dir, 'models/artag')
 
     set_gz_resource_path = SetEnvironmentVariable(
         name='GZ_SIM_RESOURCE_PATH',
-        value=[os.environ.get('GZ_SIM_RESOURCE_PATH', ''), ':', parent_dir]
+        value=[os.environ.get('GZ_SIM_RESOURCE_PATH', ''), ':', parent_dir, ':', local_dir, ":", materials_dir]
     )
+    #set_gz_resource_path2 = SetEnvironmentVariable(
+    #    name='GZ_SIM_RESOURCE_PATH',
+    #    value=[os.environ.get('GZ_SIM_RESOURCE_PATH', ''), ':', local_dir]
+    #)
+    #set_gz_resource_path3 = SetEnvironmentVariable(
+    #    name='GZ_SIM_RESOURCE_PATH',
+    #    value=[os.environ.get('GZ_SIM_RESOURCE_PATH', ''), ':', materials_dir]
+    #)
 
     robot_description_content = Command(
         [
@@ -221,14 +233,16 @@ def launch_setup(context, *args, **kwargs):
         remappings=[
             ('/world/default/model/external_camera/link/link/sensor/rgb_camera/image', 'rgb_camera/image'),
             ('/world/default/model/external_camera/link/link/sensor/depth_camera/image', 'depth_camera/image'),
-            ('/world/default/model/external_camera/link/link/sensor/rgb_camera/camera_info', 'rgb_camera/info'),
-            ('/world/default/model/external_camera/link/link/sensor/depth_camera/camera_info', 'depth_camera/info'),
+            ('/world/default/model/external_camera/link/link/sensor/rgb_camera/camera_info', 'rgb_camera/camera_info'),
+            ('/world/default/model/external_camera/link/link/sensor/depth_camera/camera_info', 'depth_camera/camera_info'),
         ],
         output="screen",
     )
 
     nodes_to_start = [
         set_gz_resource_path,
+        #set_gz_resource_path2,
+        #set_gz_resource_path3,
         robot_state_publisher_node,
         #ros2_control_node,
         joint_state_broadcaster_spawner,
@@ -352,7 +366,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "world_file",
             default_value=PathJoinSubstitution(
-                [FindPackageShare("ir_base"), "worlds", "iaslab_empty_ur.sdf.xacro"]
+                [FindPackageShare("ir_base"), "worlds", "iaslab_ur.sdf"]
             ),          
             #"/var/home/piero/Projects/ros2/ir_ws/src/ir_base/worlds/iaslab_empty.sdf.xacro",
             description="Gazebo world file (absolute path or filename from the gazebosim worlds collection) containing a custom world.",
