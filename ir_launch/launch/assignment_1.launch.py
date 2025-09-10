@@ -33,6 +33,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PythonExpression
 
 from launch_ros.actions import Node
+from launch.actions import SetEnvironmentVariable
 
 
 def generate_launch_description():
@@ -42,6 +43,21 @@ def generate_launch_description():
     sim_dir = get_package_share_directory('nav2_minimal_tb3_sim')
     ir_launch_dir = get_package_share_directory('ir_launch')
     base_dir = get_package_share_directory('ir_base')
+
+    # Correctly set the path to the parent of the package folder.
+    # This allows Gazebo to find 'ir_desription' as a model.
+    # Set the Gazebo resource path to find meshes and models
+    ur_description_share_dir = get_package_share_directory('ur_description')
+    base_share_dir = get_package_share_directory('ir_base')
+
+    parent_dir = os.path.dirname(ur_description_share_dir)
+    local_dir = os.path.dirname(base_share_dir)
+    materials_dir = os.path.join(base_share_dir, 'models/artag')
+
+    set_gz_resource_path = SetEnvironmentVariable(
+        name='GZ_SIM_RESOURCE_PATH',
+        value=[os.environ.get('GZ_SIM_RESOURCE_PATH', ''), ':', parent_dir, ':', local_dir, ":", materials_dir]
+    )
 
     # Create the launch configuration variables
     slam = LaunchConfiguration('slam')
@@ -62,9 +78,9 @@ def generate_launch_description():
     headless = LaunchConfiguration('headless')
     world = LaunchConfiguration('world')
     pose = {
-        'x': LaunchConfiguration('x_pose', default='0.00'),
-        'y': LaunchConfiguration('y_pose', default='0.00'),
-        'z': LaunchConfiguration('z_pose', default='0.00'),
+        'x': LaunchConfiguration('x_pose', default='-8.29'),
+        'y': LaunchConfiguration('y_pose', default='1.87'),
+        'z': LaunchConfiguration('z_pose', default='0.01'),
         'R': LaunchConfiguration('roll', default='0.00'),
         'P': LaunchConfiguration('pitch', default='0.00'),
         'Y': LaunchConfiguration('yaw', default='0.00'),
@@ -152,7 +168,7 @@ def generate_launch_description():
 
     declare_world_cmd = DeclareLaunchArgument(
         'world',
-        default_value=os.path.join(base_dir, 'worlds', 'apples_world.sdf.xacro'),
+        default_value=os.path.join(base_dir, 'worlds', 'iaslab_nav.sdf'),
         description='Full path to world model file to load',
     )
 
@@ -166,7 +182,7 @@ def generate_launch_description():
         description='Full path to robot sdf file to spawn the robot in gazebo',
     )
 
-    urdf = os.path.join(sim_dir, 'urdf', 'turtlebot3_waffle.urdf')
+    urdf = os.path.join(base_dir, 'urdf', 'turtlebot3_waffle.urdf')
     with open(urdf, 'r') as infp:
         robot_description = infp.read()
 
@@ -179,6 +195,23 @@ def generate_launch_description():
         output='screen',
         parameters=[
             {'use_sim_time': use_sim_time, 'robot_description': robot_description}
+        ],
+        remappings=remappings,
+    )
+
+    urdf = os.path.join(base_dir, 'urdf', 'camera.urdf')
+    with open(urdf, 'r') as infp:
+        camera_description = infp.read()
+
+    start_camera_state_publisher_cmd = Node(
+        condition=IfCondition(use_robot_state_pub),
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        name='robot_state_publisher',
+        namespace=namespace,
+        output='screen',
+        parameters=[
+            {'use_sim_time': use_sim_time, 'robot_description': camera_description}
         ],
         remappings=remappings,
     )
@@ -255,6 +288,8 @@ def generate_launch_description():
 
     # Create the launch description and populate
     ld = LaunchDescription()
+    ld.add_action(set_gz_resource_path)
+
 
     # Declare the launch options
     ld.add_action(declare_namespace_cmd)
@@ -286,5 +321,8 @@ def generate_launch_description():
     ld.add_action(start_robot_state_publisher_cmd)
     ld.add_action(rviz_cmd)
     ld.add_action(bringup_cmd)
+
+    ld.add_action(start_camera_state_publisher_cmd)
+
 
     return ld

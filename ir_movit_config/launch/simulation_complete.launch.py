@@ -46,7 +46,8 @@ def launch_setup(context, *args, **kwargs):
     ur_control_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution(
-                [FindPackageShare("ir_movit_config"), "launch", "original_base.launch.py"]
+                [FindPackageShare("ir_movit_config"), "launch", "ir
+                _base.launch.py"]
             )
         ),
         launch_arguments={
@@ -132,7 +133,7 @@ def generate_launch_description():
                 [
                     FindPackageShare("ir_movit_config"),
                     "launch",
-                    "original_movit.launch.py",
+                    "ir_movit.launch.py",
                 ]
             ),
             description="Absolute path for MoveIt launch file, part of a config package with robot SRDF/XACRO files. Usually the argument "

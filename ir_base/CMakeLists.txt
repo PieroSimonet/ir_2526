@@ -54,3 +54,15 @@ install(
   DIRECTORY models
   DESTINATION share/${PROJECT_NAME}
 )
+
+# Install the rviz files
+install(
+  DIRECTORY rviz
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# Install the urdf files
+install(
+  DIRECTORY urdf
+  DESTINATION share/${PROJECT_NAME}
+)

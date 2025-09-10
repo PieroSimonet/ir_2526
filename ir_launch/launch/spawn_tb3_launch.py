@@ -77,8 +77,8 @@ def generate_launch_description():
         remappings=[
             ('/world/default/model/external_camera/link/link/sensor/rgb_camera/image', 'rgb_camera/image'),
             ('/world/default/model/external_camera/link/link/sensor/depth_camera/image', 'depth_camera/image'),
-            ('/world/default/model/external_camera/link/link/sensor/rgb_camera/camera_info', 'rgb_camera/info'),
-            ('/world/default/model/external_camera/link/link/sensor/depth_camera/camera_info', 'depth_camera/info'),
+            ('/world/default/model/external_camera/link/link/sensor/rgb_camera/camera_info', 'rgb_camera/camera_info'),
+            ('/world/default/model/external_camera/link/link/sensor/depth_camera/camera_info', 'depth_camera/camera_info'),
         ],
         output='screen',
     )

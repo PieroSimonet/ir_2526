@@ -62,9 +62,9 @@ def generate_launch_description():
     headless = LaunchConfiguration('headless')
     world = LaunchConfiguration('world')
     pose = {
-        'x': LaunchConfiguration('x_pose', default='-8.29'),
-        'y': LaunchConfiguration('y_pose', default='1.87'),
-        'z': LaunchConfiguration('z_pose', default='0.01'),
+        'x': LaunchConfiguration('x_pose', default='0.00'),
+        'y': LaunchConfiguration('y_pose', default='0.00'),
+        'z': LaunchConfiguration('z_pose', default='0.00'),
         'R': LaunchConfiguration('roll', default='0.00'),
         'P': LaunchConfiguration('pitch', default='0.00'),
         'Y': LaunchConfiguration('yaw', default='0.00'),
@@ -126,7 +126,7 @@ def generate_launch_description():
 
     declare_rviz_config_file_cmd = DeclareLaunchArgument(
         'rviz_config_file',
-        default_value=os.path.join(bringup_dir, 'rviz', 'nav2_default_view.rviz'),
+        default_value=os.path.join(base_dir, 'rviz', 'exercise_4.rviz'),
         description='Full path to the RVIZ config file to use',
     )
 
@@ -152,7 +152,7 @@ def generate_launch_description():
 
     declare_world_cmd = DeclareLaunchArgument(
         'world',
-        default_value=os.path.join(base_dir, 'worlds', 'iaslab_empty.sdf.xacro'),
+        default_value=os.path.join(base_dir, 'worlds', 'apples_world.sdf.xacro'),
         description='Full path to world model file to load',
     )
 
