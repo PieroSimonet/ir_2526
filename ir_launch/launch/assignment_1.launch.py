@@ -168,7 +168,7 @@ def generate_launch_description():
 
     declare_world_cmd = DeclareLaunchArgument(
         'world',
-        default_value=os.path.join(base_dir, 'worlds', 'iaslab_nav.sdf'),
+        default_value=os.path.join(base_dir, 'worlds', 'iaslab_camera_tables.sdf'),
         description='Full path to world model file to load',
     )
 
